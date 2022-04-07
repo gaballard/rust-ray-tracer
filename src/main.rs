@@ -1,11 +1,14 @@
 use std::ops;
 
+/**
+ * Vector3
+ */
 #[derive(Debug)]
-struct Vec3 {
+struct Vector3 {
     e: Vec<f32>,
 }
 
-impl Vec3 {
+impl Vector3 {
     fn x(&self) -> f32 {
         self.e[0]
     }
@@ -22,67 +25,14 @@ impl Vec3 {
     fn length(&self) -> f32 {
         self.length_squared().sqrt()
     }
-}
-
-impl ops::Neg for Vec3 {
-    type Output = Vec3;
-
-    fn neg(self) -> Vec3 {
-        Vec3 {
-            e: vec![-self.e[0], -self.e[1], -self.e[2]],
-        }
+    fn print(&self) {
+        println!("{} {} {}", self.e[0], self.e[1], self.e[2]);
     }
-}
-
-impl ops::AddAssign for Vec3 {
-    fn add_assign(&mut self, v: Vec3) {
-        *self = Vec3 {
-            e: vec![self.e[0] + v.e[0], self.e[1] + v.e[1], self.e[2] + v.e[2]],
-        }
-    }
-}
-
-impl ops::SubAssign for Vec3 {
-    fn sub_assign(&mut self, v: Vec3) {
-        *self = Vec3 {
-            e: vec![self.e[0] - v.e[0], self.e[1] - v.e[1], self.e[2] - v.e[2]],
-        }
-    }
-}
-
-impl ops::MulAssign for Vec3 {
-    fn mul_assign(&mut self, v: Vec3) {
-        *self = Vec3 {
-            e: vec![self.e[0] * v.e[0], self.e[1] * v.e[1], self.e[2] * v.e[2]],
-        }
-    }
-}
-
-impl ops::DivAssign for Vec3 {
-    fn div_assign(&mut self, v: Vec3) {
-        *self = Vec3 {
-            e: vec![self.e[0] / v.e[0], self.e[1] / v.e[1], self.e[2] / v.e[2]],
-        }
-    }
-}
-
-trait DotProduct {
-    fn dot(&self, v: Vec3) -> f32;
-}
-
-trait CrossProduct {
-    fn cross(&self, v: Vec3) -> Vec3;
-}
-
-impl DotProduct for Vec3 {
-    fn dot(&self, v: Vec3) -> f32 {
+    fn dot(&self, v: Vector3) -> f32 {
         self.e[0] * v.e[0] + self.e[1] * v.e[1] + self.e[2] * v.e[2]
     }
-}
-
-impl CrossProduct for Vec3 {
-    fn cross(&self, v: Vec3) -> Vec3 {
-        Vec3 {
+    fn cross(&self, v: Vector3) -> Vector3 {
+        Vector3 {
             e: vec![
                 self.e[1] * v.e[2] - self.e[2] * v.e[1],
                 self.e[2] * v.e[0] - self.e[0] * v.e[2],
@@ -90,52 +40,193 @@ impl CrossProduct for Vec3 {
             ],
         }
     }
+    fn unit_vector(&self) -> Vector3 {
+        self / self.length()
+    }
 }
 
-fn print(v: &Vec3) {
-    println!("{} {} {}", v.e[0], v.e[1], v.e[2]);
-}
-fn add(u: &Vec3, v: &Vec3) -> Vec3 {
-    Vec3 {
-        e: vec![u.e[0] + v.e[0], u.e[1] + v.e[1], u.e[2] + v.e[2]],
+impl ops::Neg for Vector3 {
+    type Output = Vector3;
+    fn neg(self) -> Vector3 {
+        Vector3 {
+            e: vec![-self.e[0], -self.e[1], -self.e[2]],
+        }
     }
-}
-fn subtract(u: &Vec3, v: &Vec3) -> Vec3 {
-    Vec3 {
-        e: vec![u.e[0] - v.e[0], u.e[1] - v.e[1], u.e[2] - v.e[2]],
-    }
-}
-fn multiply(u: &Vec3, v: &Vec3) -> Vec3 {
-    Vec3 {
-        e: vec![u.e[0] * v.e[0], u.e[1] * v.e[1], u.e[2] * v.e[2]],
-    }
-}
-fn divide(v: &Vec3, t: f32) -> Vec3 {
-    Vec3 {
-        e: vec![v.e[0] / t, v.e[1] / t, v.e[2] / t],
-    }
-}
-fn dot(u: &Vec3, v: &Vec3) -> f32 {
-    u.e[0] * v.e[0] + u.e[1] * v.e[1] + u.e[2] * v.e[2]
-}
-fn cross(u: &Vec3, v: &Vec3) -> Vec3 {
-    Vec3 {
-        e: vec![
-            u.e[1] * v.e[2] - u.e[2] * v.e[1],
-            u.e[2] * v.e[0] - u.e[0] * v.e[2],
-            u.e[0] * v.e[1] - u.e[1] * v.e[0],
-        ],
-    }
-}
-fn unit_vector(v: &Vec3) -> Vec3 {
-    divide(v, v.length())
 }
 
-// 3D Point
-type Point3 = Vec3;
+impl ops::AddAssign for Vector3 {
+    fn add_assign(&mut self, v: Vector3) {
+        *self = Vector3 {
+            e: vec![self.e[0] + v.e[0], self.e[1] + v.e[1], self.e[2] + v.e[2]],
+        }
+    }
+}
 
-// RGB Color
-type Color = Vec3;
+impl ops::MulAssign<f32> for Vector3 {
+    fn mul_assign(&mut self, t: f32) {
+        *self = Vector3 {
+            e: vec![self.e[0] * t, self.e[1] * t, self.e[2] * t],
+        }
+    }
+}
+
+impl ops::DivAssign<f32> for Vector3 {
+    fn div_assign(&mut self, t: f32) {
+        *self *= 1.0 / t
+        // *self = Vector3 {
+        //     e: vec![self.e[0] / v.e[0], self.e[1] / v.e[1], self.e[2] / v.e[2]],
+        // }
+    }
+}
+
+// impl ops::Sub for Vector3 {
+//     type Output = Vector3;
+//     fn sub(self, v: Vector3) -> Vector3 {
+//         Vector3 {
+//             e: vec![self.e[0] - v.e[0], self.e[1] - v.e[1], self.e[2] - v.e[2]],
+//         }
+//     }
+// }
+
+// impl ops::Mul for Vector3 {
+//     type Output = Vector3;
+//     fn mul(self, v: Vector3) -> Vector3 {
+//         Vector3 {
+//             e: vec![self.e[0] * v.e[0], self.e[1] * v.e[1], self.e[2] * v.e[2]],
+//         }
+//     }
+// }
+
+// impl ops::Div<f32> for Vector3 {
+//     type Output = Vector3;
+//     fn div(self, t: f32) -> Vector3 {
+//         Vector3 {
+//             e: vec![self.e[0] / t, self.e[1] / t, self.e[2] / t],
+//         }
+//     }
+// }
+
+// trait DotProduct {
+//     fn dot(&self, v: Vector3) -> f32;
+// }
+
+// trait CrossProduct {
+//     fn cross(&self, v: Vector3) -> Vector3;
+// }
+
+// impl DotProduct for Vector3 {
+//     fn dot(&self, v: Vector3) -> f32 {
+//         self.e[0] * v.e[0] + self.e[1] * v.e[1] + self.e[2] * v.e[2]
+//     }
+// }
+
+// impl CrossProduct for Vector3 {
+//     fn cross(&self, v: Vector3) -> Vector3 {
+//         Vector3 {
+//             e: vec![
+//                 self.e[1] * v.e[2] - self.e[2] * v.e[1],
+//                 self.e[2] * v.e[0] - self.e[0] * v.e[2],
+//                 self.e[0] * v.e[1] - self.e[1] * v.e[0],
+//             ],
+//         }
+//     }
+// }
+
+impl ops::Add for Vector3 {
+    type Output = Vector3;
+    fn add(self, v: Vector3) -> Vector3 {
+        Vector3 {
+            e: vec![self.e[0] + v.e[0], self.e[1] + v.e[1], self.e[2] + v.e[2]],
+        }
+    }
+}
+
+impl ops::Add for &Vector3 {
+    type Output = Vector3;
+    fn add(self, v: &Vector3) -> Vector3 {
+        Vector3 {
+            e: vec![self.e[0] + v.e[0], self.e[1] + v.e[1], self.e[2] + v.e[2]],
+        }
+    }
+}
+
+impl ops::Sub for &Vector3 {
+    type Output = Vector3;
+    fn sub(self, v: &Vector3) -> Vector3 {
+        Vector3 {
+            e: vec![self.e[0] - v.e[0], self.e[1] - v.e[1], self.e[2] - v.e[2]],
+        }
+    }
+}
+
+impl ops::Sub for Vector3 {
+    type Output = Vector3;
+    fn sub(self, v: Vector3) -> Vector3 {
+        Vector3 {
+            e: vec![self.e[0] - v.e[0], self.e[1] - v.e[1], self.e[2] - v.e[2]],
+        }
+    }
+}
+
+impl ops::Mul for &Vector3 {
+    type Output = Vector3;
+    fn mul(self, v: &Vector3) -> Vector3 {
+        Vector3 {
+            e: vec![self.e[0] * v.e[0], self.e[1] * v.e[1], self.e[2] * v.e[2]],
+        }
+    }
+}
+
+impl ops::Mul for Vector3 {
+    type Output = Vector3;
+    fn mul(self, v: Vector3) -> Vector3 {
+        Vector3 {
+            e: vec![self.e[0] * v.e[0], self.e[1] * v.e[1], self.e[2] * v.e[2]],
+        }
+    }
+}
+
+impl ops::Mul<f32> for &Vector3 {
+    type Output = Vector3;
+    fn mul(self, t: f32) -> Vector3 {
+        Vector3 {
+            e: vec![self.e[0] * t, self.e[1] * t, self.e[2] * t],
+        }
+    }
+}
+
+impl ops::Mul<f32> for Vector3 {
+    type Output = Vector3;
+    fn mul(self, t: f32) -> Vector3 {
+        Vector3 {
+            e: vec![self.e[0] * t, self.e[1] * t, self.e[2] * t],
+        }
+    }
+}
+
+impl ops::Div<f32> for &Vector3 {
+    type Output = Vector3;
+    fn div(self, t: f32) -> Vector3 {
+        self * (1.0 / t)
+    }
+}
+
+impl ops::Div<f32> for Vector3 {
+    type Output = Vector3;
+    fn div(self, t: f32) -> Vector3 {
+        self * (1.0 / t)
+    }
+}
+
+/**
+ * 3D Point
+ */
+type Point3 = Vector3;
+
+/**
+ * Color
+ */
+type Color = Vector3;
 
 fn write_color(pixel_color: Color) {
     println!(
@@ -146,6 +237,23 @@ fn write_color(pixel_color: Color) {
     )
 }
 
+/**
+ * Rays
+ */
+struct Ray {
+    orig: Point3,
+    dir: Vector3,
+}
+
+impl Ray {
+    // fn at(&self, t: f32) -> Point3 {
+    //     self.orig + t * self.dir
+    // }
+}
+
+/**
+ * Main
+ */
 fn main() {
     // Image
     const IMAGE_WIDTH: u16 = 256;
@@ -169,4 +277,63 @@ fn main() {
     }
 
     eprintln!("\nDone.");
+}
+
+fn tests() {
+    let mut a = Vector3 {
+        e: vec![1.0, 1.0, 1.0],
+    };
+
+    a.print();
+    assert_eq!(a.e, vec![1.0, 1.0, 1.0]);
+
+    a += Vector3 {
+        e: vec![2.0, 2.0, 2.0],
+    };
+    a.print();
+    assert_eq!(a.e, vec![3.0, 3.0, 3.0]);
+
+    a *= 3.0;
+    a.print();
+    assert_eq!(a.e, vec![9.0, 9.0, 9.0]);
+
+    a /= 3.0;
+    a.print();
+    assert_eq!(a.e, vec![3.0, 3.0, 3.0]);
+
+    let b = a + Vector3 {
+        e: vec![2.0, 2.0, 2.0],
+    };
+    b.print();
+    assert_eq!(b.e, vec![5.0, 5.0, 5.0]);
+    let c = b - Vector3 {
+        e: vec![1.5, 1.5, 1.5],
+    };
+    c.print();
+    assert_eq!(c.e, vec![3.5, 3.5, 3.5]);
+    let d = c * Vector3 {
+        e: vec![2.0, 2.0, 2.0],
+    };
+    d.print();
+    assert_eq!(d.e, vec![7.0, 7.0, 7.0]);
+    let e = d * 0.5;
+    e.print();
+    assert_eq!(e.e, vec![3.5, 3.5, 3.5]);
+    let f = e / 1.25;
+    f.print();
+    assert_eq!(f.e, vec![2.8, 2.8, 2.8]);
+    println!("{:?}", f.unit_vector());
+    println!(
+        "{:?}",
+        f.dot(Vector3 {
+            e: vec![2.0, 2.0, 2.0]
+        })
+    );
+    f.print();
+    println!(
+        "{:?}",
+        f.cross(Vector3 {
+            e: vec![4.0, 4.0, 4.0]
+        })
+    );
 }
