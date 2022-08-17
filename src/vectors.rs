@@ -145,7 +145,7 @@ pub type Point3 = Vector3;
  */
 pub type Color = Vector3;
 
-pub fn write_color(pixel_color: Color) {
+pub fn write_color(pixel_color: &Color) {
     println!(
         "{} {} {}",
         (255.999 * pixel_color.x()) as u16,
@@ -153,8 +153,8 @@ pub fn write_color(pixel_color: Color) {
         (255.999 * pixel_color.z()) as u16
     )
 }
-pub fn ray_color(r: Ray) -> Color {
-    let mut t = hit_sphere(Point3::new(0.0, 0.0, -1.0), 0.5, &r);
+pub fn ray_color(r: &Ray) -> Color {
+    let mut t = hit_sphere(Point3::new(0.0, 0.0, -1.0), &0.5, &r);
     if t > 0.0 {
         let normal = unit_vector(&(r.at(t) - Vector3::new(0.0, 0.0, -1.0)));
         return 0.5 * Color::new(normal.x() + 1.0, normal.y() + 1.0, normal.z() + 1.0);
@@ -193,7 +193,7 @@ impl Ray {
     }
 }
 
-pub fn hit_sphere(center: Point3, radius: f32, r: &Ray) -> f32 {
+pub fn hit_sphere(center: Point3, radius: &f32, r: &Ray) -> f32 {
     let oc = r.origin() - center;
     let a = dot(&r.direction(), &r.direction());
     let b = 2.0 * dot(&oc, &r.direction());

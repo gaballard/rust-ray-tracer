@@ -37,8 +37,8 @@ fn main() {
                 origin,
                 lower_left_corner + u * horizontal + v * vertical - origin,
             );
-            let pixel_color: vectors::Color = vectors::ray_color(r);
-            vectors::write_color(pixel_color);
+            let pixel_color: vectors::Color = vectors::ray_color(&r);
+            vectors::write_color(&pixel_color);
         }
     }
 
